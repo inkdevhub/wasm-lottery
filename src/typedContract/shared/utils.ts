@@ -1,15 +1,14 @@
-import fs from "fs";
 import type {ContractPromise} from "@polkadot/api-contract";
 import {handleEventReturn} from "@supercolony/typechain-types";
+import data from "../data/lottery.json";
+import eventData from "../event-data/lottery.json";
 
 export function getTypeDescription(id: number | string, fileName: string): any {
-	const types = JSON.parse(fs.readFileSync(__dirname + `/../data/${fileName}.json`, 'utf8'));
-	return types[id];
+	return data[id];
 }
 
 export function getEventTypeDescription(name: string, fileName: string): any {
-	const types = JSON.parse(fs.readFileSync(__dirname + `/../event-data/${fileName}.json`, 'utf8'));
-	return types[name];
+	return eventData[name];
 }
 
 export function decodeEvents(events: any[], contract: ContractPromise, fileName: string): any[] {

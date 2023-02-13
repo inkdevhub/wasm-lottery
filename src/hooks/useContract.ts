@@ -1,6 +1,6 @@
 import { ApiPromise, Keyring } from '@polkadot/api'
 import { useMemo } from 'react'
-import Lottery from '../../typedContract/contracts/lottery'
+import Lottery from '../typedContract/contracts/lottery'
 
 const useContract = (api: ApiPromise | undefined, apiReady: boolean) => {
   const address: string = process.env.CONTRACT_ADDRESS || 'XJvi9BGdvzRx6KJbVv8t1mqmrQoe4eiFyH6KetrRRj4J5Hf'

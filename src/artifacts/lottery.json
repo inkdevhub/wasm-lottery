@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x943a2baf8571cd8438ddae5173f662bb1259bcd5f3397fb8f9b1894017984e0c",
+    "hash": "0xc0f553cfb437ee909cf3be42f40572afe05533ec5dc19ab4cbcfbfccf0053f89",
     "language": "ink! 3.4.0",
     "compiler": "rustc 1.67.0-nightly"
   },
@@ -28,7 +28,7 @@
           "args": [
             {
               "docs": [
-                " The slug of the mapping."
+                " The player who entered."
               ],
               "indexed": false,
               "label": "player",
@@ -41,10 +41,10 @@
             },
             {
               "docs": [
-                " The URL that the slug maps to."
+                " The value sent."
               ],
               "indexed": false,
-              "label": "balance",
+              "label": "value",
               "type": {
                 "displayName": [
                   "Balance"
@@ -55,6 +55,38 @@
           ],
           "docs": [],
           "label": "Entered"
+        },
+        {
+          "args": [
+            {
+              "docs": [
+                " The winner."
+              ],
+              "indexed": false,
+              "label": "winner",
+              "type": {
+                "displayName": [
+                  "AccountId"
+                ],
+                "type": 0
+              }
+            },
+            {
+              "docs": [
+                " The winning amount."
+              ],
+              "indexed": false,
+              "label": "amount",
+              "type": {
+                "displayName": [
+                  "Balance"
+                ],
+                "type": 6
+              }
+            }
+          ],
+          "docs": [],
+          "label": "Won"
         }
       ],
       "messages": [

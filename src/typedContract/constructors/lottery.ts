@@ -1,9 +1,10 @@
 import {CodePromise} from "@polkadot/api-contract";
 import type {KeyringPair} from "@polkadot/keyring/types";
-import Files from "fs";
 import type {ApiPromise} from "@polkadot/api";
 import {_signAndSend, SignAndSendSuccessResponse} from "@supercolony/typechain-types";
 import type {ConstructorOptions} from "@supercolony/typechain-types";
+import __contract from '../../artifacts/lottery.contract.json';
+
 import type * as ArgumentTypes from '../types-arguments/lottery';
 import type BN from 'bn.js';
 
@@ -26,7 +27,6 @@ export default class Constructors {
    	async "new" (
    		__options ? : ConstructorOptions,
    	) {
-   		const __contract = JSON.parse(Files.readFileSync("./artifacts/lottery.contract").toString());
 		const code = new CodePromise(this.nativeAPI, __contract, __contract.source.wasm);
 		const gasLimit = 100000 * 1000000 || __options?.gasLimit;
 

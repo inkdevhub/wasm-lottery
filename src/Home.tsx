@@ -8,13 +8,13 @@ function Home() {
   const [isRunning, setIsRunning] = useState(false)
 
   useEffect(() => {
-    const getPendingArsw = async () => {
+    const getIsRunning = async () => {
       if (!contract) { return }
       const isRunning = await contract.query.isRunning()
 
       setIsRunning(isRunning.value)
     }
-    getPendingArsw()
+    getIsRunning()
   }, [contract])
 
 
@@ -22,7 +22,7 @@ function Home() {
     <div className="App">
       <header className="App-header">
         <p>
-          Edit <code>src/App.tsx</code> {isRunning}.
+          Edit <code>src/App.tsx</code> {isRunning + ''}.
         </p>
         <a
           className="App-link"
