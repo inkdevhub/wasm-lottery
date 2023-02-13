@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x5ba8e29f88b143b4b35ce3e737687b2befd09ed609d8b595a2efa209975cd012",
+    "hash": "0x5c673c118e705cd1c8f1dfb41836704b5dbec9a28a4a47443bfa0ff745dd3c5f",
     "language": "ink! 3.4.0",
     "compiler": "rustc 1.67.0-nightly"
   },
@@ -56,22 +56,6 @@
             "type": 3
           },
           "selector": "0x1b0e6452"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns the list of players"
-          ],
-          "label": "get_players",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Vec"
-            ],
-            "type": 4
-          },
-          "selector": "0xa3355842"
         },
         {
           "args": [

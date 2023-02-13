@@ -35,6 +35,52 @@ export default class Methods {
 	}
 
 	/**
+	* owner
+	*
+	* @returns { ReturnTypes.AccountId }
+	*/
+	"owner" (
+		__options: GasLimit,
+	): Promise< QueryReturnType< ReturnTypes.AccountId > >{
+		return queryJSON( this.__nativeContract, this.__callerAddress, "owner", [], __options, (result) => { return handleReturnType(result, getTypeDescription(0, 'lottery')); });
+	}
+
+	/**
+	* isRunning
+	*
+	* @returns { boolean }
+	*/
+	"isRunning" (
+		__options: GasLimit,
+	): Promise< QueryReturnType< boolean > >{
+		return queryJSON( this.__nativeContract, this.__callerAddress, "isRunning", [], __options);
+	}
+
+	/**
+	* getPlayers
+	*
+	* @returns { Array<ReturnTypes.AccountId> }
+	*/
+	"getPlayers" (
+		__options: GasLimit,
+	): Promise< QueryReturnType< Array<ReturnTypes.AccountId> > >{
+		return queryJSON( this.__nativeContract, this.__callerAddress, "getPlayers", [], __options, (result) => { return handleReturnType(result, getTypeDescription(4, 'lottery')); });
+	}
+
+	/**
+	* getBalance
+	*
+	* @param { ArgumentTypes.AccountId } caller,
+	* @returns { ReturnNumber | null }
+	*/
+	"getBalance" (
+		caller: ArgumentTypes.AccountId,
+		__options: GasLimit,
+	): Promise< QueryReturnType< ReturnNumber | null > >{
+		return queryJSON( this.__nativeContract, this.__callerAddress, "getBalance", [caller], __options, (result) => { return handleReturnType(result, getTypeDescription(8, 'lottery')); });
+	}
+
+	/**
 	* enter
 	*
 	* @returns { void }

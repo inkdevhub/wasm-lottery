@@ -17,6 +17,48 @@ export default class Methods {
 		this.__nativeContract = nativeContract;
 	}
 	/**
+	 * owner
+	 *
+	*/
+	"owner" (
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__nativeContract, "owner", [], __options);
+	}
+
+	/**
+	 * isRunning
+	 *
+	*/
+	"isRunning" (
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__nativeContract, "isRunning", [], __options);
+	}
+
+	/**
+	 * getPlayers
+	 *
+	*/
+	"getPlayers" (
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__nativeContract, "getPlayers", [], __options);
+	}
+
+	/**
+	 * getBalance
+	 *
+	 * @param { ArgumentTypes.AccountId } caller,
+	*/
+	"getBalance" (
+		caller: ArgumentTypes.AccountId,
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__nativeContract, "getBalance", [caller], __options);
+	}
+
+	/**
 	 * enter
 	 *
 	*/

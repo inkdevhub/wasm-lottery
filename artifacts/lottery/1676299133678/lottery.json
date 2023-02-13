@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x5ba8e29f88b143b4b35ce3e737687b2befd09ed609d8b595a2efa209975cd012",
+    "hash": "0x200140e47d55a9c673dab4641fd6e7d407b178e95a2e46329a75dd6993e815fb",
     "language": "ink! 3.4.0",
     "compiler": "rustc 1.67.0-nightly"
   },
@@ -28,80 +28,6 @@
         {
           "args": [],
           "docs": [
-            " Returns the current owner of the lottery"
-          ],
-          "label": "owner",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "AccountId"
-            ],
-            "type": 0
-          },
-          "selector": "0xfeaea4fa"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns the current state of the lottery"
-          ],
-          "label": "is_running",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "bool"
-            ],
-            "type": 3
-          },
-          "selector": "0x1b0e6452"
-        },
-        {
-          "args": [],
-          "docs": [
-            " Returns the list of players"
-          ],
-          "label": "get_players",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Vec"
-            ],
-            "type": 4
-          },
-          "selector": "0xa3355842"
-        },
-        {
-          "args": [
-            {
-              "label": "caller",
-              "type": {
-                "displayName": [
-                  "AccountId"
-                ],
-                "type": 0
-              }
-            }
-          ],
-          "docs": [
-            " Retrieve the balance of the account."
-          ],
-          "label": "get_balance",
-          "mutates": false,
-          "payable": false,
-          "returnType": {
-            "displayName": [
-              "Option"
-            ],
-            "type": 8
-          },
-          "selector": "0xea817e65"
-        },
-        {
-          "args": [],
-          "docs": [
             " Allows a player to enter the lottery by sending a value"
           ],
           "label": "enter",
@@ -111,7 +37,7 @@
             "displayName": [
               "Result"
             ],
-            "type": 9
+            "type": 8
           },
           "selector": "0x8883954a"
         },
@@ -125,7 +51,7 @@
             "displayName": [
               "Result"
             ],
-            "type": 9
+            "type": 8
           },
           "selector": "0x1d49cc13"
         },
@@ -139,7 +65,7 @@
             "displayName": [
               "Result"
             ],
-            "type": 9
+            "type": 8
           },
           "selector": "0x996e2d9b"
         },
@@ -153,7 +79,7 @@
             "displayName": [
               "Result"
             ],
-            "type": 9
+            "type": 8
           },
           "selector": "0xcb2815e1"
         }
@@ -325,42 +251,9 @@
             "variant": {
               "variants": [
                 {
-                  "index": 0,
-                  "name": "None"
-                },
-                {
                   "fields": [
                     {
-                      "type": 6
-                    }
-                  ],
-                  "index": 1,
-                  "name": "Some"
-                }
-              ]
-            }
-          },
-          "params": [
-            {
-              "name": "T",
-              "type": 6
-            }
-          ],
-          "path": [
-            "Option"
-          ]
-        }
-      },
-      {
-        "id": 9,
-        "type": {
-          "def": {
-            "variant": {
-              "variants": [
-                {
-                  "fields": [
-                    {
-                      "type": 10
+                      "type": 9
                     }
                   ],
                   "index": 0,
@@ -369,7 +262,7 @@
                 {
                   "fields": [
                     {
-                      "type": 11
+                      "type": 10
                     }
                   ],
                   "index": 1,
@@ -381,11 +274,11 @@
           "params": [
             {
               "name": "T",
-              "type": 10
+              "type": 9
             },
             {
               "name": "E",
-              "type": 11
+              "type": 10
             }
           ],
           "path": [
@@ -394,7 +287,7 @@
         }
       },
       {
-        "id": 10,
+        "id": 9,
         "type": {
           "def": {
             "tuple": []
@@ -402,7 +295,7 @@
         }
       },
       {
-        "id": 11,
+        "id": 10,
         "type": {
           "def": {
             "variant": {
@@ -422,10 +315,6 @@
                 {
                   "index": 3,
                   "name": "ErrTransfer"
-                },
-                {
-                  "index": 4,
-                  "name": "PlayerAlreadyInLottery"
                 }
               ]
             }

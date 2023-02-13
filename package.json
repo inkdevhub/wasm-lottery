@@ -6,7 +6,9 @@
   "scripts": {
     "run-node": "swanky node start",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\" --exit --timeout 20000",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "compile": "typechain-compiler",
+    "compile:release": "typechain-compiler --release"
   },
   "engines": {
     "node": ">=18.0.0"

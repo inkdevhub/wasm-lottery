@@ -28,6 +28,56 @@ export default class Methods {
 	}
 
 	/**
+	* owner
+	*
+	*/
+	"owner" (
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "owner", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, "lottery");
+		}, [], __options);
+	}
+
+	/**
+	* isRunning
+	*
+	*/
+	"isRunning" (
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "isRunning", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, "lottery");
+		}, [], __options);
+	}
+
+	/**
+	* getPlayers
+	*
+	*/
+	"getPlayers" (
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "getPlayers", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, "lottery");
+		}, [], __options);
+	}
+
+	/**
+	* getBalance
+	*
+	* @param { ArgumentTypes.AccountId } caller,
+	*/
+	"getBalance" (
+		caller: ArgumentTypes.AccountId,
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "getBalance", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, "lottery");
+		}, [caller], __options);
+	}
+
+	/**
 	* enter
 	*
 	*/

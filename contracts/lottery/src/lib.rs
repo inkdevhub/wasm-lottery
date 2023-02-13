@@ -5,6 +5,10 @@ use ink_lang as ink;
 #[ink::contract]
 mod lottery {
     use ink_prelude::vec::Vec;
+    use ink_storage::{
+        traits::SpreadAllocate,
+        Mapping,
+    };
     use ink_env::{
         hash::{
             Keccak256,
@@ -15,11 +19,12 @@ mod lottery {
     /// Add new fields to the below struct in order
     /// to add new static storage fields to your contract.
     #[ink(storage)]
+    #[derive(SpreadAllocate)]
     pub struct Lottery {
         owner: AccountId,
         running: bool,
         players: Vec<AccountId>,
-
+        entries: Mapping<AccountId, Balance>,
     }
 
     /// Errors that can occur upon calling this contract.
@@ -34,6 +39,8 @@ mod lottery {
         NoValueSent,
         /// Returned if transfer failed.
         ErrTransfer,
+        /// Returned if the player is already in the lottery.
+        PlayerAlreadyInLottery,
     }
 
     /// Type alias for the contract's result type.
@@ -42,23 +49,41 @@ mod lottery {
     impl Lottery {
         #[ink(constructor)]
         pub fn new() -> Self {
-            Self {
-                owner: Self::env().caller(),
-                running: false,
-                players: Vec::new(),
-            }
+            ink_lang::codegen::initialize_contract(|instance: &mut Lottery| {
+                instance.owner = Self::env().caller();
+                instance.running = false;
+                instance.players = Vec::new();
+                instance.entries = Mapping::default();
+            })
         }
 
         /// Returns the current owner of the lottery
+        #[ink(message)]
         pub fn owner(&self) -> AccountId {
             self.owner
+        }
+
+        /// Returns the current state of the lottery
+        #[ink(message)]
+        pub fn is_running(&self) -> bool {
+            self.running
+        }
+
+        /// Returns the list of players
+        #[ink(message)]
+        pub fn get_players(&self) -> Vec<AccountId> {
+            self.players.clone()
+        }
+
+        /// Retrieve the balance of the account.
+        #[ink(message)]
+        pub fn get_balance(&self, caller: AccountId) -> Option<Balance> {
+            self.entries.get(&caller)
         }
 
         /// Generates a random number based on the list of players
         fn random(&self) -> u64 {
             let seed = self.env().hash_encoded::<Keccak256, _>(&self.players);
-            let timestamp = self.env().block_timestamp();
-
 
             u64::from_be_bytes(seed[0..8].try_into().unwrap())
         }
@@ -69,12 +94,19 @@ mod lottery {
             if !self.running {
                 return Err(Error::LotteryNotRunning)
             }
-            let value: Balance = self.env().transferred_value();
             let caller = self.env().caller();
+            let balance: Option<Balance> = self.entries.get(&caller);
+
+            if balance.is_some() {
+                return Err(Error::PlayerAlreadyInLottery)
+            }
+
+            let value: Balance = self.env().transferred_value();
             if value < 1 {
                 return Err(Error::NoValueSent)
             }
             self.players.push(caller);
+            self.entries.insert(caller, &value);
 
             Ok(())
         }
@@ -90,6 +122,7 @@ mod lottery {
             }
 
             self.players = Vec::new();
+            self.entries = Mapping::default();
 
             Ok(())
         }
