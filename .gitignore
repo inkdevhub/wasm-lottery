@@ -220,6 +220,7 @@ bin/swanky-node
 
 # End of https://www.toptal.com/developers/gitignore/api/node,macos,visualstudiocode
 
+/build
 *-debug.log
 *-error.log
 /.nyc_output
