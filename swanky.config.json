@@ -1,0 +1,46 @@
+{
+  "node": {
+    "localPath": "/home/nikhil/astar/lottery/lottery/bin/swanky-node",
+    "polkadotPalletVersions": "polkadot-v0.9.33",
+    "supportedInk": "v4.0.0"
+  },
+  "accounts": [
+    {
+      "alias": "alice",
+      "mnemonic": "//Alice",
+      "isDev": true,
+      "address": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+    },
+    {
+      "alias": "bob",
+      "mnemonic": "//Bob",
+      "isDev": true,
+      "address": "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+    }
+  ],
+  "contracts": {
+    "lottery": {
+      "name": "lottery",
+      "deployments": [],
+      "language": "ink",
+      "build": {
+        "timestamp": 1676292480814,
+        "artifactsPath": "/home/nikhil/astar/lottery/lottery/artifacts/lottery/1676292480814"
+      }
+    }
+  },
+  "networks": {
+    "local": {
+      "url": "ws://127.0.0.1:9944"
+    },
+    "astar": {
+      "url": "wss://rpc.astar.network"
+    },
+    "shiden": {
+      "url": "wss://rpc.shiden.astar.network"
+    },
+    "shibuya": {
+      "url": "wss://rpc.shibuya.astar.network"
+    }
+  }
+}

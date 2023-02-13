@@ -1,0 +1,7 @@
+{
+  "projectFiles": [
+    "contracts/lottery/*"
+  ],
+  "artifactsPath": "artifacts",
+  "typechainGeneratedPath": "typedContract"
+}
