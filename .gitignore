@@ -216,6 +216,7 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+bin/swanky-node
 
 # End of https://www.toptal.com/developers/gitignore/api/node,macos,visualstudiocode
 
