@@ -15,7 +15,7 @@ import 'bulma/css/bulma.css'
 import ABI from './artifacts/lottery.json';
 import { ApiContext } from './context/ApiContext';
 
-const address: string = process.env.CONTRACT_ADDRESS || 'XxiwPhxuJZXYiX2C6PAgHnA8AANZFqoZZGC6rmd6SHSoKZZ'
+const address: string = process.env.CONTRACT_ADDRESS || 'ZuhUFU9DLWYbRshzuV6tg7mkt8vvLGtee1Zvx2mnQwqg3e2'
 const network: string = process.env.NETWORK || 'shibuya'
 
 const BN_TWO = new BN(2)
