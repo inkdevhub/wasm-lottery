@@ -43,6 +43,22 @@ mod lottery {
         PlayerAlreadyInLottery,
     }
 
+    #[ink(event)]
+    pub struct Entered {
+        /// The player who entered.
+        player: AccountId,
+        /// The value sent.
+        value: Balance,
+    }
+
+    #[ink(event)]
+    pub struct Won {
+        /// The winner.
+        winner: AccountId,
+        /// The winning amount.
+        amount: Balance,
+    }
+
     /// Type alias for the contract's result type.
     pub type Result<T> = core::result::Result<T, Error>;
 
@@ -105,24 +121,35 @@ mod lottery {
             if value < 1 {
                 return Err(Error::NoValueSent)
             }
+
             self.players.push(caller);
             self.entries.insert(caller, &value);
+
+            self.env().emit_event(Entered {
+                player: caller,
+                value: value
+            });
 
             Ok(())
         }
 
         #[ink(message)]
         pub fn pick_winner(&mut self) -> Result<()> {
-            let winner = self.random() % self.players.len() as u64;
-            let recipient = self.players[winner as usize];
+            let winner_index = self.random() % self.players.len() as u64;
+            let winner = self.players[winner_index as usize];
             let amount: Balance = self.env().balance();
 
-            if self.env().transfer(recipient, amount).is_err() {
+            if self.env().transfer(winner, amount).is_err() {
                 return Err(Error::ErrTransfer)
             }
 
             self.players = Vec::new();
             self.entries = Mapping::default();
+
+            self.env().emit_event(Won {
+                winner,
+                amount
+            });
 
             Ok(())
         }
