@@ -79,6 +79,11 @@ mod lottery {
             self.owner
         }
 
+        #[ink(message)]
+        pub fn pot(&self) -> Balance {
+            self.env().balance()
+        }
+
         /// Returns the current state of the lottery
         #[ink(message)]
         pub fn is_running(&self) -> bool {

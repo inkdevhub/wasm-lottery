@@ -35,6 +35,17 @@ export default class Methods {
 	}
 
 	/**
+	* pot
+	*
+	* @returns { ReturnNumber }
+	*/
+	"pot" (
+		__options ? : GasLimit,
+	): Promise< QueryReturnType< ReturnNumber > >{
+		return queryJSON< ReturnNumber >( this.__nativeContract, this.__callerAddress, "pot", [], __options , (result) => { return new ReturnNumber(result as (number | string)); });
+	}
+
+	/**
 	* isRunning
 	*
 	* @returns { boolean }

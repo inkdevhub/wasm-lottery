@@ -27,6 +27,16 @@ export default class Methods {
 	}
 
 	/**
+	 * pot
+	 *
+	*/
+	"pot" (
+		__options: GasLimit,
+	){
+		return buildSubmittableExtrinsic( this.__nativeContract, "pot", [], __options);
+	}
+
+	/**
 	 * isRunning
 	 *
 	*/

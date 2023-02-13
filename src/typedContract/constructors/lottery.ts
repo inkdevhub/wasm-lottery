@@ -1,10 +1,9 @@
 import {CodePromise} from "@polkadot/api-contract";
 import type {KeyringPair} from "@polkadot/keyring/types";
+import __contract from '../../artifacts/lottery.contract.json';
 import type {ApiPromise} from "@polkadot/api";
 import {_signAndSend, SignAndSendSuccessResponse} from "@supercolony/typechain-types";
 import type {ConstructorOptions} from "@supercolony/typechain-types";
-import __contract from '../../artifacts/lottery.contract.json';
-
 import type * as ArgumentTypes from '../types-arguments/lottery';
 import type BN from 'bn.js';
 

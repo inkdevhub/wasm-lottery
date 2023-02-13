@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0xc0f553cfb437ee909cf3be42f40572afe05533ec5dc19ab4cbcfbfccf0053f89",
+    "hash": "0xc54d35a7885226583dbb876597613142973dd519888bf7372d9965adba8e1ef1",
     "language": "ink! 3.4.0",
     "compiler": "rustc 1.67.0-nightly"
   },
@@ -105,6 +105,20 @@
             "type": 0
           },
           "selector": "0xfeaea4fa"
+        },
+        {
+          "args": [],
+          "docs": [],
+          "label": "pot",
+          "mutates": false,
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "Balance"
+            ],
+            "type": 6
+          },
+          "selector": "0xd096c0d0"
         },
         {
           "args": [],

@@ -40,6 +40,18 @@ export default class Methods {
 	}
 
 	/**
+	* pot
+	*
+	*/
+	"pot" (
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "pot", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, "lottery");
+		}, [], __options);
+	}
+
+	/**
 	* isRunning
 	*
 	*/
