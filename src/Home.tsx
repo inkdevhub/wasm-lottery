@@ -1,27 +1,39 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react'
 import {
   web3Enable,
   isWeb3Injected,
   web3Accounts,
   web3FromSource
 } from '@polkadot/extension-dapp'
+import Identicon from '@polkadot/react-identicon'
 import { ApiPromise, Keyring } from '@polkadot/api'
 import { Abi, ContractPromise } from '@polkadot/api-contract'
 import type { WeightV2 } from '@polkadot/types/interfaces'
 import { BN } from '@polkadot/util/bn'
 import type { InjectedAccountWithMeta, InjectedExtension } from '@polkadot/extension-inject/types'
-import 'bulma/css/bulma.css'
+import Button from '@mui/material/Button'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import CssBaseline from '@mui/material/CssBaseline'
+import Container from '@mui/material/Container'
+import CardContent from '@mui/material/CardContent'
 
-import ABI from './artifacts/lottery.json';
-import { ApiContext } from './context/ApiContext';
+import ABI from './artifacts/lottery.json'
+import { ApiContext } from './context/ApiContext'
 
-const address: string = process.env.CONTRACT_ADDRESS || 'ZuhUFU9DLWYbRshzuV6tg7mkt8vvLGtee1Zvx2mnQwqg3e2'
+const address: string = process.env.CONTRACT_ADDRESS || 'XbktSrCssNPbGREvbjRVR8Ag71wS7F6ym9uddecYzxj1TQ8'
 const network: string = process.env.NETWORK || 'shibuya'
 
 const BN_TWO = new BN(2)
 
 function Home() {
-  const { api, apiReady } = useContext(ApiContext);
+  const { api, apiReady } = useContext(ApiContext)
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([])
   const [account, setAccount] = useState<InjectedAccountWithMeta>()
   const [lotteryPot, setLotteryPot] = useState<string>('')
@@ -29,7 +41,7 @@ function Home() {
   const [lotteryHistory, setLotteryHistory] = useState([])
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
-  const [contract, setContract] = useState<ContractPromise>();
+  const [contract, setContract] = useState<ContractPromise>()
 
   useEffect(() => {
     updateState()
@@ -65,6 +77,11 @@ function Home() {
       return
     }
 
+    if (!account) {
+      setError('Account not initialized')
+      return
+    }
+
     if (!contract) {
       setError('Contract not initialized')
       return
@@ -73,7 +90,7 @@ function Home() {
     const gasLimit = getGasLimit(api)
 
     const { gasRequired, result, output } = await contract.query.pot(
-      address,
+      account.address,
       {
         gasLimit,
       }
@@ -150,20 +167,24 @@ function Home() {
 
     const gasLimit = getGasLimit(api)
 
-    const { gasRequired, result } = await contract.query.enter(
-      address,
+    const { gasRequired, storageDeposit, result } = await contract.query.enter(
+      account.address,
       {
-        gasLimit,
+        gasLimit: gasLimit,
+        storageDepositLimit: null,
         value: new BN('1000000000000000000')
       }
     )
 
-    console.log(result.toHuman())
+    console.log('gasRequired', gasRequired.toHuman())
+    console.log('storageDeposit', storageDeposit.toHuman())
 
     if (result.isErr) {
+
       let error = ''
       if (result.asErr.isModule) {
         const dispatchError = api.registry.findMetaError(result.asErr.asModule)
+        console.log('error', dispatchError.name)
         error = dispatchError.docs.length ? dispatchError.docs.concat().toString() : dispatchError.name
       } else {
         error = result.asErr.toString()
@@ -174,7 +195,7 @@ function Home() {
     }
 
     if (result.isOk) {
-      const flags = result.asOk.flags.toHuman();
+      const flags = result.asOk.flags.toHuman()
       if (flags.includes('Revert')) {
         console.log('Revert')
         console.log(result.toHuman())
@@ -192,6 +213,7 @@ function Home() {
     await contract.tx
       .enter({
         gasLimit: estimatedGas,
+        storageDepositLimit: null,
         value: new BN('1000000000000000000')
       })
       .signAndSend(account.address, (res) => {
@@ -227,7 +249,7 @@ function Home() {
     const gasLimit = getGasLimit(api)
 
     const { gasRequired, result } = await contract.query.pickWinner(
-      address,
+      account.address,
       {
         gasLimit,
       }
@@ -247,7 +269,7 @@ function Home() {
     }
 
     if (result.isOk) {
-      const flags = result.asOk.flags.toHuman();
+      const flags = result.asOk.flags.toHuman()
       if (flags.includes('Revert')) {
         console.log('Revert')
         console.log(result.toHuman())
@@ -326,115 +348,122 @@ function Home() {
   }
 
   return (
-    <div>
-      <main className="main">
-        <nav className="navbar mt-4 mb-4">
-          <div className="container">
-            <div className="navbar-brand">
+    <React.Fragment>
+      <CssBaseline />
+      <Container maxWidth="xl">
+        <Box>
+          <Grid container spacing={2}>
+            <Grid item xs={10}>
               <h1>WASM Lottery</h1>
-            </div>
-            {accounts.length === 0
-              ? <div className="navbar-end">
-                  <button onClick={connectWalletHandler} className="button is-link">Connect Wallet</button>
+            </Grid>
+            <Grid item xs={2}>
+              {accounts.length === 0
+                ? <Box sx={{ p: 2 }}>
+                    <Button onClick={connectWalletHandler} variant="outlined">Connect Wallet</Button>
+                  </Box>
+                : null
+              }
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>Enter the lottery by sending value</Typography>
+              <FormControl sx={{'width': '600px'}} >
+                <InputLabel>Select Account</InputLabel>
+                <Select
+                  value={accounts[0]?.address || ''}
+                  label="Select Account"
+                  onChange={handleOnSelect}
+                >
+                  {accounts.map(account => (
+                    <MenuItem value={account.address}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={1}>
+                          <Identicon
+                            value={account.address}
+                            theme='polkadot'
+                            size={40}
+                          />
+                        </Grid>
+                        <Grid item xs={11}>
+                          <Typography sx={{ fontWeight: 'bold' }}>{account.meta.name}</Typography>
+                          <Typography>{account.address}</Typography>
+                        </Grid>
+                      </Grid>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <Card sx={{ textAlign: 'center' }}>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    Lottery Pot: {lotteryPot || 0}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={8}>
+              <Button variant="outlined" onClick={enterLotteryHandler}>Play now</Button>
+            </Grid>
+            <Grid item xs={4}>
+              <Card sx={{ textAlign: 'center' }}>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    Players ({lotteryPlayers.length})
+                  </Typography>
+                  {
+                    (lotteryPlayers && lotteryPlayers.length > 0) && lotteryPlayers.map((player, index) => {
+                      return <li key={`${player}-${index}`}>
+                        <a href={`https://${network}.subscan.io/account/${player}`} target="_blank">
+                          {player}
+                        </a>
+                      </li>
+                    })
+                  }
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={8}>
+              <Button variant="contained" onClick={pickWinnerHandler}>Pick Winner</Button>
+            </Grid>
+            <Grid item xs={4}>
+              <Card>
+                <div className="card-content">
+                  <div className="content">
+                    <h2>Lottery History</h2>
+                    {/* {
+                      (lotteryHistory && lotteryHistory.length > 0) && lotteryHistory.map(item => {
+                        if (lotteryId != item.id) {
+                          return <div className="history-entry mt-3" key={item.id}>
+                            <div>Lottery #{item.id} winner:</div>
+                            <div>
+                              <a href={`https://etherscan.io/address/${item.address}`} target="_blank">
+                                {item.address}
+                              </a>
+                            </div>
+                          </div>
+                        }
+                      })
+                    } */}
+                  </div>
                 </div>
-              : null
-            }
-          </div>
-        </nav>
-        <div className="container">
-          <section className="mt-5">
-            <div className="columns">
-              <div className="column is-two-thirds">
-                <section className="mt-5">
-                  <p>Enter the lottery by sending Value</p>
-                  <div>
-
-                    <select onChange={handleOnSelect}>
-                      <option value="">Select Address</option>
-                      {accounts.map(account => (
-                        <option key={account.address} value={account.address}>{account.meta.name} {account.address}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
-                  </div>
-                </section>
-                <section className="mt-6">
-                  <button onClick={pickWinnerHandler} className="button is-primary is-large is-light mt-3">Pick Winner</button>
-                </section>
-                <section>
-                  <div className="container has-text-danger mt-6">
-                    <p>{error}</p>
-                  </div>
-                </section>
-                <section>
-                  <div className="container has-text-success mt-6">
-                    <p>{successMsg}</p>
-                  </div>
-                </section>
+              </Card>
+            </Grid>
+            <Grid item>
+              <div className="container has-text-danger mt-6">
+                <p>{error}</p>
               </div>
-              <div className={"column is-one-third"}>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Lottery History</h2>
-                        {/* {
-                          (lotteryHistory && lotteryHistory.length > 0) && lotteryHistory.map(item => {
-                            if (lotteryId != item.id) {
-                              return <div className="history-entry mt-3" key={item.id}>
-                                <div>Lottery #{item.id} winner:</div>
-                                <div>
-                                  <a href={`https://etherscan.io/address/${item.address}`} target="_blank">
-                                    {item.address}
-                                  </a>
-                                </div>
-                              </div>
-                            }
-                          })
-                        } */}
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Players ({lotteryPlayers.length})</h2>
-                        <ul className="ml-0">
-                          {
-                            (lotteryPlayers && lotteryPlayers.length > 0) && lotteryPlayers.map((player, index) => {
-                              return <li key={`${player}-${index}`}>
-                                <a href={`https://${network}.subscan.io/account/${player}`} target="_blank">
-                                  {player}
-                                </a>
-                              </li>
-                            })
-                          }
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Pot</h2>
-                        <p>{lotteryPot}</p>
-                      </div>
-                    </div>
-                  </div>
-                </section>
+            </Grid>
+            <Grid item>
+              <div className="container has-text-success mt-6">
+                <p>{successMsg}</p>
               </div>
-            </div>
-          </section>
-        </div>
-      </main>
-    </div>
-  );
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
+    </React.Fragment>
+  )
 }
 
-export default Home;
+export default Home
