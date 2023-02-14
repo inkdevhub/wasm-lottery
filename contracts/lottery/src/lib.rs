@@ -41,6 +41,8 @@ mod lottery {
         ErrTransfer,
         /// Returned if the player is already in the lottery.
         PlayerAlreadyInLottery,
+        /// Returned if there are no entries.
+        NoEntries,
     }
 
     #[ink(event)]
@@ -102,11 +104,24 @@ mod lottery {
             self.entries.get(&caller)
         }
 
-        /// Generates a random number based on the list of players
-        fn random(&self) -> u64 {
-            let seed = self.env().hash_encoded::<Keccak256, _>(&self.players);
+        /// Generates a seed based on the list of players and the block number and timestamp
+        fn seed (&self) -> u64 {
+            let hash = self.env().hash_encoded::<Keccak256, _>(&self.players);
+            let num = u64::from_be_bytes(hash[0..8].try_into().unwrap());
+            let timestamp = self.env().block_timestamp();
+            let block_number = self.env().block_number() as u64;
 
-            u64::from_be_bytes(seed[0..8].try_into().unwrap())
+            num ^ timestamp ^ block_number
+        }
+
+        /// Pseudo random number generator
+        fn random(&self) -> u64 {
+            let mut x = self.seed();
+            x ^= x << 13;
+            x ^= x >> 7;
+            x ^= x << 17;
+
+            x
         }
 
         /// Allows a player to enter the lottery by sending a value
@@ -140,6 +155,9 @@ mod lottery {
 
         #[ink(message)]
         pub fn pick_winner(&mut self) -> Result<()> {
+            if self.players.len() == 0 {
+                return Err(Error::NoEntries)
+            }
             let winner_index = self.random() % self.players.len() as u64;
             let winner = self.players[winner_index as usize];
             let amount: Balance = self.env().balance();
