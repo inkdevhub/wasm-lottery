@@ -10,6 +10,7 @@ import { ApiPromise, Keyring } from '@polkadot/api'
 import { Abi, ContractPromise } from '@polkadot/api-contract'
 import type { WeightV2 } from '@polkadot/types/interfaces'
 import { BN } from '@polkadot/util/bn'
+import { formatBalance } from '@polkadot/util';
 import type { InjectedAccountWithMeta, InjectedExtension } from '@polkadot/extension-inject/types'
 import Button from '@mui/material/Button'
 import Select from '@mui/material/Select'
@@ -23,11 +24,16 @@ import Card from '@mui/material/Card'
 import CssBaseline from '@mui/material/CssBaseline'
 import Container from '@mui/material/Container'
 import CardContent from '@mui/material/CardContent'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import CircularProgress from '@mui/material/CircularProgress'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
 
 import ABI from './artifacts/lottery.json'
 import { ApiContext } from './context/ApiContext'
 
-const address: string = process.env.CONTRACT_ADDRESS || 'XbktSrCssNPbGREvbjRVR8Ag71wS7F6ym9uddecYzxj1TQ8'
+const address: string = process.env.CONTRACT_ADDRESS || 'YQ9c5TrjQgGmtjEHjDDjQgEQ6xAvumsw1XsoE3V2gNMmRYr'
 const network: string = process.env.NETWORK || 'shibuya'
 
 const BN_TWO = new BN(2)
@@ -42,10 +48,24 @@ function Home() {
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [contract, setContract] = useState<ContractPromise>()
+  const [balance, setBalance] = useState<string>('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     updateState()
   }, [contract])
+
+  useEffect(() => {
+    const getBalance = async () => {
+      if (!api || !apiReady || !account) return
+
+      const balance = await api.query.system.account(account?.address)
+
+      setBalance(formatBalance(balance.data.free.toBn(), { decimals: 18 }))
+    }
+
+    getBalance()
+  }, [api, apiReady, account])
 
   const estimateGas = (api: ApiPromise, gasRequired: WeightV2) => {
     const estimatedGas = api.registry.createType(
@@ -105,8 +125,8 @@ function Home() {
     }
 
     if (output) {
-      const pot = output.toHuman() as string
-      setLotteryPot(pot)
+      const pot = output.toString()
+      setLotteryPot(formatBalance(new BN(pot), { decimals: 18 }))
     }
   }
 
@@ -210,6 +230,8 @@ function Home() {
 
     const estimatedGas = estimateGas(api, gasRequired)
 
+    setLoading(true)
+
     await contract.tx
       .enter({
         gasLimit: estimatedGas,
@@ -222,6 +244,7 @@ function Home() {
         }
         if (res.status.isFinalized) {
           console.log('finalized')
+          setLoading(false)
           updateState()
           setSuccessMsg('Successfully entered in lottery!')
         }
@@ -284,7 +307,9 @@ function Home() {
 
     const estimatedGas = estimateGas(api, gasRequired)
 
-    await contract.tx
+    setLoading(true)
+
+    const unsub = await contract.tx
       .pickWinner({
         gasLimit: estimatedGas,
       })
@@ -293,9 +318,15 @@ function Home() {
           console.log('in a block')
         }
         if (res.status.isFinalized) {
+          setLoading(false)
           console.log('finalized')
           updateState()
           setSuccessMsg('Successfully picked winner!')
+          res.events.forEach(record => {
+            const { event } = record;
+
+            console.log('event', event.toHuman())
+          });
         }
       })
   }
@@ -323,6 +354,7 @@ function Home() {
 
     if (injectedAccounts.length > 0) {
       setAccounts(injectedAccounts)
+      setAccount(injectedAccounts[0])
     }
 
     const abi = new Abi(ABI, api.registry.getChainProperties())
@@ -347,8 +379,18 @@ function Home() {
     }
   }
 
+  const handleClose = () => {
+    setLoading(false)
+  }
+
   return (
     <React.Fragment>
+      <Dialog onClose={handleClose} open={loading}>
+        <DialogTitle>Confirming Transaction</DialogTitle>
+        <Box sx={{ width: '250px', height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <CircularProgress />
+        </Box>
+      </Dialog>
       <CssBaseline />
       <Container maxWidth="xl">
         <Box>
@@ -365,45 +407,50 @@ function Home() {
               }
             </Grid>
             <Grid item xs={8}>
-              <Typography>Enter the lottery by sending value</Typography>
-              <FormControl sx={{'width': '600px'}} >
-                <InputLabel>Select Account</InputLabel>
-                <Select
-                  value={accounts[0]?.address || ''}
-                  label="Select Account"
-                  onChange={handleOnSelect}
-                >
-                  {accounts.map(account => (
-                    <MenuItem value={account.address}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={1}>
-                          <Identicon
-                            value={account.address}
-                            theme='polkadot'
-                            size={40}
-                          />
+            {accounts.length && account ?
+              <>
+                <Typography>Enter the lottery by sending value</Typography>
+                <FormControl sx={{'width': '600px'}}>
+                  <InputLabel>Select Account</InputLabel>
+                  <Select
+                    value={account.address}
+                    label="Select Account"
+                    onChange={handleOnSelect}
+                  >
+                    {accounts.map(account => (
+                      <MenuItem key={account.address} value={account.address}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={1}>
+                            <Identicon
+                              value={account.address}
+                              theme='polkadot'
+                              size={40}
+                            />
+                          </Grid>
+                          <Grid item xs={11}>
+                            <Typography sx={{ fontWeight: 'bold' }}>{account.meta.name}</Typography>
+                            <Typography>{account.address}</Typography>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={11}>
-                          <Typography sx={{ fontWeight: 'bold' }}>{account.meta.name}</Typography>
-                          <Typography>{account.address}</Typography>
-                        </Grid>
-                      </Grid>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <Typography>Balance: {balance} {api ? api.registry.chainTokens[0] : null}</Typography>
+              </>
+            : <>Connect Wallet to Play</>}
             </Grid>
             <Grid item xs={4}>
               <Card sx={{ textAlign: 'center' }}>
                 <CardContent>
                   <Typography variant="h5" component="div">
-                    Lottery Pot: {lotteryPot || 0}
+                    Lottery Pot: {lotteryPot || 0} {api ? api.registry.chainTokens[0] : null}
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={8}>
-              <Button variant="outlined" onClick={enterLotteryHandler}>Play now</Button>
+              <Button disabled={!account} variant="outlined" onClick={enterLotteryHandler}>Play now</Button>
             </Grid>
             <Grid item xs={4}>
               <Card sx={{ textAlign: 'center' }}>
@@ -411,26 +458,27 @@ function Home() {
                   <Typography variant="h5" component="div">
                     Players ({lotteryPlayers.length})
                   </Typography>
-                  {
-                    (lotteryPlayers && lotteryPlayers.length > 0) && lotteryPlayers.map((player, index) => {
-                      return <li key={`${player}-${index}`}>
-                        <a href={`https://${network}.subscan.io/account/${player}`} target="_blank">
-                          {player}
-                        </a>
-                      </li>
-                    })
-                  }
+                  <List>
+                  {(lotteryPlayers && lotteryPlayers.length > 0) && lotteryPlayers.map((player, index) => {
+                    return <ListItem key={`${player}-${index}`}>
+                      <a href={`https://${network}.subscan.io/account/${player}`} target="_blank">
+                        {player}
+                      </a>
+                    </ListItem>
+                  })}
+                  </List>
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={8}>
-              <Button variant="contained" onClick={pickWinnerHandler}>Pick Winner</Button>
+              <Button disabled={!account} variant="contained" onClick={pickWinnerHandler}>Pick Winner</Button>
             </Grid>
             <Grid item xs={4}>
-              <Card>
-                <div className="card-content">
-                  <div className="content">
-                    <h2>Lottery History</h2>
+              <Card sx={{ textAlign: 'center' }}>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    History
+                  </Typography>
                     {/* {
                       (lotteryHistory && lotteryHistory.length > 0) && lotteryHistory.map(item => {
                         if (lotteryId != item.id) {
@@ -445,19 +493,18 @@ function Home() {
                         }
                       })
                     } */}
-                  </div>
-                </div>
+                </CardContent>
               </Card>
             </Grid>
             <Grid item>
-              <div className="container has-text-danger mt-6">
-                <p>{error}</p>
-              </div>
+              <Typography sx={{ color: 'red' }}>
+                {error}
+              </Typography>
             </Grid>
             <Grid item>
-              <div className="container has-text-success mt-6">
-                <p>{successMsg}</p>
-              </div>
+              <Typography sx={{ color: 'green' }}>
+                {successMsg}
+              </Typography>
             </Grid>
           </Grid>
         </Box>

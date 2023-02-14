@@ -166,8 +166,11 @@ mod lottery {
                 return Err(Error::ErrTransfer)
             }
 
+            for player in self.players.iter() {
+                self.entries.remove(player);
+            }
+
             self.players = Vec::new();
-            self.entries = Mapping::default();
 
             self.env().emit_event(Won {
                 winner,
