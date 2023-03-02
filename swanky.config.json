@@ -1,6 +1,6 @@
 {
   "node": {
-    "localPath": "/home/nikhil/astar/lottery/lottery/bin/swanky-node",
+    "localPath": "",
     "polkadotPalletVersions": "polkadot-v0.9.33",
     "supportedInk": "v4.0.0"
   },
@@ -24,8 +24,8 @@
       "deployments": [],
       "language": "ink",
       "build": {
-        "timestamp": 1676543459390,
-        "artifactsPath": "/home/nikhil/astar/lottery/lottery/artifacts/lottery/1676543459390"
+        "timestamp": 1677772790095,
+        "artifactsPath": "/home/nikhil/astar/wasm-lottery/artifacts/lottery/1677772790095"
       }
     }
   },

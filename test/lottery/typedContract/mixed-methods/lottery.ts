@@ -3,14 +3,15 @@
 import type { ContractPromise } from '@polkadot/api-contract';
 import type { ApiPromise } from '@polkadot/api';
 import type { KeyringPair } from '@polkadot/keyring/types';
-import type { GasLimit, GasLimitAndRequiredValue, Result } from '@supercolony/typechain-types';
-import type { QueryReturnType } from '@supercolony/typechain-types';
-import { queryOkJSON, queryJSON, handleReturnType } from '@supercolony/typechain-types';
-import { txSignAndSend } from '@supercolony/typechain-types';
+import type { GasLimit, GasLimitAndRequiredValue, Result } from '@727-ventures/typechain-types';
+import type { QueryReturnType } from '@727-ventures/typechain-types';
+import { queryOkJSON, queryJSON, handleReturnType } from '@727-ventures/typechain-types';
+import { txSignAndSend } from '@727-ventures/typechain-types';
 import type * as ArgumentTypes from '../types-arguments/lottery';
 import type * as ReturnTypes from '../types-returns/lottery';
 import type BN from 'bn.js';
-import {ReturnNumber} from '@supercolony/typechain-types';
+//@ts-ignore
+import {ReturnNumber} from '@727-ventures/typechain-types';
 import {getTypeDescription} from './../shared/utils';
 // @ts-ignore
 import type {EventRecord} from "@polkadot/api/submittable";
@@ -42,7 +43,18 @@ export default class Methods {
 	"owner" (
 		__options: GasLimit,
 	): Promise< QueryReturnType< ReturnTypes.AccountId > >{
-		return queryJSON( this.__nativeContract, this.__callerAddress, "owner", [], __options, (result) => { return handleReturnType(result, getTypeDescription(0, 'lottery')); });
+		return queryJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "owner", [], __options, (result) => { return handleReturnType(result, getTypeDescription(0, 'lottery')); });
+	}
+
+	/**
+	* pot
+	*
+	* @returns { ReturnNumber }
+	*/
+	"pot" (
+		__options: GasLimit,
+	): Promise< QueryReturnType< ReturnNumber > >{
+		return queryJSON< ReturnNumber >( this.__apiPromise, this.__nativeContract, this.__callerAddress, "pot", [], __options, (result) => { return new ReturnNumber(result as (number | string)); });
 	}
 
 	/**
@@ -53,7 +65,7 @@ export default class Methods {
 	"isRunning" (
 		__options: GasLimit,
 	): Promise< QueryReturnType< boolean > >{
-		return queryJSON( this.__nativeContract, this.__callerAddress, "isRunning", [], __options);
+		return queryJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "isRunning", [], __options);
 	}
 
 	/**
@@ -64,7 +76,7 @@ export default class Methods {
 	"getPlayers" (
 		__options: GasLimit,
 	): Promise< QueryReturnType< Array<ReturnTypes.AccountId> > >{
-		return queryJSON( this.__nativeContract, this.__callerAddress, "getPlayers", [], __options, (result) => { return handleReturnType(result, getTypeDescription(4, 'lottery')); });
+		return queryJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "getPlayers", [], __options, (result) => { return handleReturnType(result, getTypeDescription(4, 'lottery')); });
 	}
 
 	/**
@@ -77,7 +89,7 @@ export default class Methods {
 		caller: ArgumentTypes.AccountId,
 		__options: GasLimit,
 	): Promise< QueryReturnType< ReturnNumber | null > >{
-		return queryJSON( this.__nativeContract, this.__callerAddress, "getBalance", [caller], __options, (result) => { return handleReturnType(result, getTypeDescription(8, 'lottery')); });
+		return queryJSON( this.__apiPromise, this.__nativeContract, this.__callerAddress, "getBalance", [caller], __options, (result) => { return handleReturnType(result, getTypeDescription(8, 'lottery')); });
 	}
 
 	/**

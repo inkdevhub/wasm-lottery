@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0xaf17a31e0a8209ff649b957b6b47010a6415960d710862b85ae159bd2bfd70d8",
+    "hash": "0x8c007acce27efe50b40e13b5d1bd648357db5f990a7f89f072fa3fd2c0f804da",
     "language": "ink! 3.4.0",
     "compiler": "rustc 1.67.0-nightly"
   },
@@ -105,6 +105,20 @@
             "type": 0
           },
           "selector": "0xfeaea4fa"
+        },
+        {
+          "args": [],
+          "docs": [],
+          "label": "pot",
+          "mutates": false,
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "Balance"
+            ],
+            "type": 6
+          },
+          "selector": "0xd096c0d0"
         },
         {
           "args": [],
@@ -491,6 +505,10 @@
                 {
                   "index": 4,
                   "name": "PlayerAlreadyInLottery"
+                },
+                {
+                  "index": 5,
+                  "name": "NoEntries"
                 }
               ]
             }

@@ -33,7 +33,7 @@ import ListItem from '@mui/material/ListItem'
 import ABI from './artifacts/lottery.json'
 import { ApiContext } from './context/ApiContext'
 
-const address: string = process.env.CONTRACT_ADDRESS || 'YQ9c5TrjQgGmtjEHjDDjQgEQ6xAvumsw1XsoE3V2gNMmRYr'
+const address: string = process.env.CONTRACT_ADDRESS || 'ZZJDDGxbe4gximPQGQyPYTvEXEhpagpsStpTYetABEAUeRu'
 const network: string = process.env.NETWORK || 'shibuya'
 
 const BN_TWO = new BN(2)

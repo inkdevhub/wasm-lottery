@@ -9,6 +9,7 @@ export enum Error {
 	callerNotOwner = 'CallerNotOwner',
 	noValueSent = 'NoValueSent',
 	errTransfer = 'ErrTransfer',
-	playerAlreadyInLottery = 'PlayerAlreadyInLottery'
+	playerAlreadyInLottery = 'PlayerAlreadyInLottery',
+	noEntries = 'NoEntries'
 }
 
