@@ -33,7 +33,7 @@ import ListItem from '@mui/material/ListItem'
 import ABI from './artifacts/lottery.json'
 import { ApiContext } from './context/ApiContext'
 
-const address: string = process.env.CONTRACT_ADDRESS || 'YQ9c5TrjQgGmtjEHjDDjQgEQ6xAvumsw1XsoE3V2gNMmRYr'
+const address: string = process.env.CONTRACT_ADDRESS || 'ZZJDDGxbe4gximPQGQyPYTvEXEhpagpsStpTYetABEAUeRu'
 const network: string = process.env.NETWORK || 'shibuya'
 
 const BN_TWO = new BN(2)
@@ -66,19 +66,6 @@ function Home() {
 
     getBalance()
   }, [api, apiReady, account])
-
-  const estimateGas = (api: ApiPromise, gasRequired: WeightV2) => {
-    const estimatedGas = api.registry.createType(
-      'WeightV2',
-      {
-        refTime: gasRequired.refTime.toBn().mul(BN_TWO),
-        proofSize: gasRequired.proofSize.toBn().mul(BN_TWO),
-      }
-    ) as WeightV2
-
-    return estimatedGas
-  }
-
 
   const updateState = () => {
     if (contract) getPot()
@@ -228,13 +215,11 @@ function Home() {
       }
     }
 
-    const estimatedGas = estimateGas(api, gasRequired)
-
     setLoading(true)
 
     await contract.tx
       .enter({
-        gasLimit: estimatedGas,
+        gasLimit: gasRequired,
         storageDepositLimit: null,
         value: new BN('1000000000000000000')
       })
@@ -305,13 +290,11 @@ function Home() {
       }
     }
 
-    const estimatedGas = estimateGas(api, gasRequired)
-
     setLoading(true)
 
     const unsub = await contract.tx
       .pickWinner({
-        gasLimit: estimatedGas,
+        gasLimit: gasRequired,
       })
       .signAndSend(account.address, (res) => {
         if (res.status.isInBlock) {

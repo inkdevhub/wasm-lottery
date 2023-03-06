@@ -3,8 +3,8 @@
 import type { ContractPromise } from '@polkadot/api-contract';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { ApiPromise } from '@polkadot/api';
-import type { GasLimit, GasLimitAndRequiredValue, Result } from '@supercolony/typechain-types';
-import { txSignAndSend } from '@supercolony/typechain-types';
+import type { GasLimit, GasLimitAndRequiredValue, Result } from '@727-ventures/typechain-types';
+import { txSignAndSend } from '@727-ventures/typechain-types';
 import type * as ArgumentTypes from '../types-arguments/lottery';
 import type BN from 'bn.js';
 // @ts-ignore
@@ -35,6 +35,18 @@ export default class Methods {
 		__options ? : GasLimit,
 	){
 		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "owner", (events: EventRecord) => {
+			return decodeEvents(events, this.__nativeContract, "lottery");
+		}, [], __options);
+	}
+
+	/**
+	* pot
+	*
+	*/
+	"pot" (
+		__options ? : GasLimit,
+	){
+		return txSignAndSend( this.__apiPromise, this.__nativeContract, this.__keyringPair, "pot", (events: EventRecord) => {
 			return decodeEvents(events, this.__nativeContract, "lottery");
 		}, [], __options);
 	}

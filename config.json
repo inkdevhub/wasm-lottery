@@ -1,7 +1,5 @@
 {
-  "projectFiles": [
-    "contracts/lottery/*"
-  ],
-  "artifactsPath": "src/artifacts",
-  "typechainGeneratedPath": "src/typedContract"
+  "projectFiles": ["contracts/**/*"],
+  "artifactsPath": "artifacts",
+  "typechainGeneratedPath": "typedContract"
 }
