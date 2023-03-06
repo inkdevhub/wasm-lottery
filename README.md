@@ -12,24 +12,25 @@ Apache 2.0
 
 Clone project
 ```sh
-git clone git@github.com:astarNetwork/wasm-lottery.git
+git clone git@github.com:swanky-dapps/wasm-lottery.git
 ```
 
 Build
 
 ```sh
-cargo contract build
+swanky contract compile lottery
 ```
 
 ##### 💫 Run unit test
 
 ```sh
-cargo test
+swanky test
 ```
+
 ##### 💫 Deploy
 First start your local node. Recommended [swanky-node](https://github.com/AstarNetwork/swanky-node) v1.0.0
 ```sh
-cargo ??
+swanky contract deploy lottery
 ```
 - or deploy polkadot JS. Instructions on [Astar docs](https://docs.astar.network/docs/wasm/sc-dev/polkadotjs-ui)
 
@@ -43,13 +44,19 @@ yarn test
 ```
 
 ##### 💫 Deployed contracts
-TBA
 
----
+Shibuya: ZZJDDGxbe4gximPQGQyPYTvEXEhpagpsStpTYetABEAUeRu
+
+
 ## 🏗️ How to use - UI
-Image - GIF
-Link to UI - how to use
-##### Build local
-yarn ...
+
+```
+yarn
+yarn start
+```
+
+Goto http://localhost:3000
+
+
 ##### links
-link to vercel deployed website
+link to firebase deployed website: https://wasm-lottery.web.app/
