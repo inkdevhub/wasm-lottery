@@ -1,25 +1,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_lang as ink;
-
 #[ink::contract]
 mod lottery {
-    use ink_prelude::vec::Vec;
-    use ink_storage::{
-        traits::SpreadAllocate,
-        Mapping,
-    };
-    use ink_env::{
-        hash::{
-            Keccak256,
-        }
-    };
+    use ink::env::hash::Keccak256;
+    use ink::storage::{Mapping};
+    use ink::prelude::vec::Vec;
 
     /// Defines the storage of your contract.
     /// Add new fields to the below struct in order
     /// to add new static storage fields to your contract.
     #[ink(storage)]
-    #[derive(SpreadAllocate)]
     pub struct Lottery {
         owner: AccountId,
         running: bool,
@@ -67,12 +57,12 @@ mod lottery {
     impl Lottery {
         #[ink(constructor)]
         pub fn new() -> Self {
-            ink_lang::codegen::initialize_contract(|instance: &mut Lottery| {
-                instance.owner = Self::env().caller();
-                instance.running = false;
-                instance.players = Vec::new();
-                instance.entries = Mapping::default();
-            })
+            Self {
+                owner: Self::env().caller(),
+                running: false,
+                players: Vec::new(),
+                entries: Mapping::default(),
+            }
         }
 
         /// Returns the current owner of the lottery
@@ -105,7 +95,7 @@ mod lottery {
         }
 
         /// Generates a seed based on the list of players and the block number and timestamp
-        fn seed (&self) -> u64 {
+        fn seed(&self) -> u64 {
             let hash = self.env().hash_encoded::<Keccak256, _>(&self.players);
             let num = u64::from_be_bytes(hash[0..8].try_into().unwrap());
             let timestamp = self.env().block_timestamp();
@@ -128,18 +118,18 @@ mod lottery {
         #[ink(message, payable)]
         pub fn enter(&mut self) -> Result<()> {
             if !self.running {
-                return Err(Error::LotteryNotRunning)
+                return Err(Error::LotteryNotRunning);
             }
             let caller = self.env().caller();
             let balance: Option<Balance> = self.entries.get(&caller);
 
             if balance.is_some() {
-                return Err(Error::PlayerAlreadyInLottery)
+                return Err(Error::PlayerAlreadyInLottery);
             }
 
             let value: Balance = self.env().transferred_value();
             if value < 1 {
-                return Err(Error::NoValueSent)
+                return Err(Error::NoValueSent);
             }
 
             self.players.push(caller);
@@ -147,7 +137,7 @@ mod lottery {
 
             self.env().emit_event(Entered {
                 player: caller,
-                value: value
+                value: value,
             });
 
             Ok(())
@@ -156,14 +146,14 @@ mod lottery {
         #[ink(message)]
         pub fn pick_winner(&mut self) -> Result<()> {
             if self.players.len() == 0 {
-                return Err(Error::NoEntries)
+                return Err(Error::NoEntries);
             }
             let winner_index = self.random() % self.players.len() as u64;
             let winner = self.players[winner_index as usize];
             let amount: Balance = self.env().balance();
 
             if self.env().transfer(winner, amount).is_err() {
-                return Err(Error::ErrTransfer)
+                return Err(Error::ErrTransfer);
             }
 
             for player in self.players.iter() {
@@ -172,10 +162,7 @@ mod lottery {
 
             self.players = Vec::new();
 
-            self.env().emit_event(Won {
-                winner,
-                amount
-            });
+            self.env().emit_event(Won { winner, amount });
 
             Ok(())
         }
@@ -183,7 +170,7 @@ mod lottery {
         #[ink(message)]
         pub fn start_lottery(&mut self) -> Result<()> {
             if self.env().caller() != self.owner {
-                return Err(Error::CallerNotOwner)
+                return Err(Error::CallerNotOwner);
             }
             self.running = true;
 
@@ -193,7 +180,7 @@ mod lottery {
         #[ink(message)]
         pub fn stop_lottery(&mut self) -> Result<()> {
             if self.env().caller() != self.owner {
-                return Err(Error::CallerNotOwner)
+                return Err(Error::CallerNotOwner);
             }
             self.running = false;
 
@@ -209,13 +196,10 @@ mod lottery {
         /// Imports all the definitions from the outer scope so we can use them here.
         use super::*;
 
-        /// Imports `ink_lang` so we can use `#[ink::test]`.
-        use ink_lang as ink;
-
         /// We test if the default constructor does its job.
         #[ink::test]
         fn default_works() {
-            let lottery = Lottery::default();
+            let lottery = Lottery::new();
             assert_eq!(lottery.random() > 0, true);
         }
     }
