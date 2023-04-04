@@ -1,24 +1,20 @@
 /* This file is auto-generated */
 
 import type { ContractPromise } from '@polkadot/api-contract';
-import type { GasLimit, GasLimitAndRequiredValue } from '@727-ventures/typechain-types';
-import { buildSubmittableExtrinsic } from '@727-ventures/typechain-types';
+import type { GasLimit, GasLimitAndRequiredValue } from '@supercolony/typechain-types';
+import { buildSubmittableExtrinsic } from '@supercolony/typechain-types';
 import type * as ArgumentTypes from '../types-arguments/lottery';
 import type BN from 'bn.js';
-import type { ApiPromise } from '@polkadot/api';
 
 
 
 export default class Methods {
 	private __nativeContract : ContractPromise;
-	private __apiPromise: ApiPromise;
 
 	constructor(
 		nativeContract : ContractPromise,
-		apiPromise: ApiPromise,
 	) {
 		this.__nativeContract = nativeContract;
-		this.__apiPromise = apiPromise;
 	}
 	/**
 	 * owner
@@ -27,7 +23,7 @@ export default class Methods {
 	"owner" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "owner", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "owner", [], __options);
 	}
 
 	/**
@@ -37,7 +33,7 @@ export default class Methods {
 	"pot" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "pot", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "pot", [], __options);
 	}
 
 	/**
@@ -47,7 +43,7 @@ export default class Methods {
 	"isRunning" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "isRunning", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "isRunning", [], __options);
 	}
 
 	/**
@@ -57,7 +53,7 @@ export default class Methods {
 	"getPlayers" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "getPlayers", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "getPlayers", [], __options);
 	}
 
 	/**
@@ -69,7 +65,7 @@ export default class Methods {
 		caller: ArgumentTypes.AccountId,
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "getBalance", [caller], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "getBalance", [caller], __options);
 	}
 
 	/**
@@ -79,7 +75,7 @@ export default class Methods {
 	"enter" (
 		__options: GasLimitAndRequiredValue,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "enter", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "enter", [], __options);
 	}
 
 	/**
@@ -89,7 +85,7 @@ export default class Methods {
 	"pickWinner" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "pickWinner", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "pickWinner", [], __options);
 	}
 
 	/**
@@ -99,7 +95,7 @@ export default class Methods {
 	"startLottery" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "startLottery", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "startLottery", [], __options);
 	}
 
 	/**
@@ -109,7 +105,7 @@ export default class Methods {
 	"stopLottery" (
 		__options: GasLimit,
 	){
-		return buildSubmittableExtrinsic( this.__apiPromise, this.__nativeContract, "stopLottery", [], __options);
+		return buildSubmittableExtrinsic( this.__nativeContract, "stopLottery", [], __options);
 	}
 
 }

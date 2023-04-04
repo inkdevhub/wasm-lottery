@@ -15,7 +15,7 @@ export interface ApiContextProviderProps {
 	children?: React.ReactElement;
 }
 
-const WS_PROVIDER = process.env.REACT_APP_WS_PROVIDER || 'wss://rpc.shibuya.astar.network';
+const WS_PROVIDER = process.env.REACT_APP_WS_PROVIDER || 'wss://rpc.astar.network';
 
 export function ApiContextProvider(
 	props: ApiContextProviderProps

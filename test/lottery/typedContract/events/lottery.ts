@@ -2,7 +2,7 @@ import type * as EventTypes from '../event-types/lottery';
 import type {ContractPromise} from "@polkadot/api-contract";
 import type {ApiPromise} from "@polkadot/api";
 import {getEventTypeDescription} from "../shared/utils";
-import {handleEventReturn} from "@727-ventures/typechain-types";
+import {handleEventReturn} from "@supercolony/typechain-types";
 
 export default class EventsClass {
 	private __nativeContract : ContractPromise;
@@ -18,7 +18,7 @@ export default class EventsClass {
 
 	public subscribeOnEnteredEvent(callback : (event : EventTypes.Entered) => void) {
 		const callbackWrapper = (args: any[], event: any) => {
-			const _event: Record < string, any > = {};
+			let _event: Record < string, any > = {};
 
 			for (let i = 0; i < args.length; i++) {
 				_event[event.args[i]!.name] = args[i]!.toJSON();
@@ -32,7 +32,7 @@ export default class EventsClass {
 
 	public subscribeOnWonEvent(callback : (event : EventTypes.Won) => void) {
 		const callbackWrapper = (args: any[], event: any) => {
-			const _event: Record < string, any > = {};
+			let _event: Record < string, any > = {};
 
 			for (let i = 0; i < args.length; i++) {
 				_event[event.args[i]!.name] = args[i]!.toJSON();

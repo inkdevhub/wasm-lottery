@@ -24,8 +24,8 @@
       "deployments": [],
       "language": "ink",
       "build": {
-        "timestamp": 1678098780446,
-        "artifactsPath": "/home/nikhil/astar/wasm-lottery/artifacts/lottery/1678098780446"
+        "timestamp": 1680606877634,
+        "artifactsPath": "/home/nikhil/astar/wasm-lottery/artifacts/lottery/1680606877634"
       }
     }
   },

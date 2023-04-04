@@ -16,6 +16,7 @@ import Button from '@mui/material/Button'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
+import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -33,13 +34,15 @@ import ListItem from '@mui/material/ListItem'
 import ABI from './artifacts/lottery.json'
 import { ApiContext } from './context/ApiContext'
 
-const address: string = process.env.CONTRACT_ADDRESS || 'ZZJDDGxbe4gximPQGQyPYTvEXEhpagpsStpTYetABEAUeRu'
-const network: string = process.env.NETWORK || 'shibuya'
+const address: string = process.env.CONTRACT_ADDRESS || 'bZ2uiFGTLcYyP8F88XzXa13xu5Mmp13VLiaW1gGn7rzxktc'
+const network: string = process.env.NETWORK || 'astar'
 
 const BN_TWO = new BN(2)
+const decimals = new BN('1000000000000000000')
 
 function Home() {
   const { api, apiReady } = useContext(ApiContext)
+  const [amount, setAmount] = useState<string>('')
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([])
   const [account, setAccount] = useState<InjectedAccountWithMeta>()
   const [lotteryPot, setLotteryPot] = useState<string>('')
@@ -66,6 +69,10 @@ function Home() {
 
     getBalance()
   }, [api, apiReady, account])
+
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(event.target.value)
+  }
 
   const updateState = () => {
     if (contract) getPot()
@@ -172,14 +179,21 @@ function Home() {
       return
     }
 
+    if (isNaN(Number(amount))) {
+      setError('invalid amount')
+      return
+    }
+
     const gasLimit = getGasLimit(api)
+
+    console.log(amount)
 
     const { gasRequired, storageDeposit, result } = await contract.query.enter(
       account.address,
       {
         gasLimit: gasLimit,
         storageDepositLimit: null,
-        value: new BN('1000000000000000000')
+        value: (new BN(amount)).mul(decimals),
       }
     )
 
@@ -221,7 +235,7 @@ function Home() {
       .enter({
         gasLimit: gasRequired,
         storageDepositLimit: null,
-        value: new BN('1000000000000000000')
+        value: (new BN(amount)).mul(decimals),
       })
       .signAndSend(account.address, (res) => {
         if (res.status.isInBlock) {
@@ -380,6 +394,7 @@ function Home() {
           <Grid container spacing={2}>
             <Grid item xs={10}>
               <h1>WASM Lottery</h1>
+              <h5>Don't use for gambling. This is for educational purpose only.</h5>
             </Grid>
             <Grid item xs={2}>
               {accounts.length === 0
@@ -392,6 +407,7 @@ function Home() {
             <Grid item xs={8}>
             {accounts.length && account ?
               <>
+                <Typography>Contract Address: <a href={`https://${network}.subscan.io/account/${address}`}>{address}</a></Typography>
                 <Typography>Enter the lottery by sending value</Typography>
                 <FormControl sx={{'width': '600px'}}>
                   <InputLabel>Select Account</InputLabel>
@@ -420,6 +436,15 @@ function Home() {
                   </Select>
                 </FormControl>
                 <Typography>Balance: {balance} {api ? api.registry.chainTokens[0] : null}</Typography>
+                <FormControl sx={{'width': '600px'}}>
+                  <TextField
+                    id="amount"
+                    error={isNaN(Number(amount))}
+                    label="Amount"
+                    value={amount}
+                    onChange={handleAmountChange}
+                  />
+                </FormControl>
               </>
             : <>Connect Wallet to Play</>}
             </Grid>
