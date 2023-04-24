@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Nikhil Ranjan"]
 edition = "2021"
 
+[dev-dependencies]
+ink_e2e = "4.0.1"
+
 [dependencies]
 ink = { version = "~4.1.0", default-features = false }
 
