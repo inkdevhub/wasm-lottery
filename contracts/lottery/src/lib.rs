@@ -272,6 +272,20 @@ mod lottery {
             let running_result = client.call_dry_run(&ink_e2e::bob(), &running, 0, None).await;
             assert!(matches!(running_result.return_value(), true));
 
+            // When
+            let stop_lottery = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.stop_lottery());
+            let _stop_lottery_result = client
+                .call(&ink_e2e::bob(), stop_lottery, 0, None)
+                .await
+                .expect("start_lottery failed");
+
+            // Then
+            let running_after_stop = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.is_running());
+            let running_after_stop_result = client.call_dry_run(&ink_e2e::bob(), &running_after_stop, 0, None).await;
+            assert!(matches!(running_result.return_value(), false));
+
             Ok(())
         }
     }
