@@ -246,7 +246,7 @@ mod lottery {
         #[ink_e2e::test]
         async fn it_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
             // Given
-            let constructor = LotteryRef::new(false);
+            let constructor = LotteryRef::new();
             let contract_account_id = client
                 .instantiate("lottery", &ink_e2e::bob(), constructor, 0, None)
                 .await
