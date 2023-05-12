@@ -272,7 +272,7 @@ mod lottery {
             let owner_result = client.call_dry_run(&ink_e2e::bob(), &owner, 0, None).await;
             let (_alice_account_id, _bob_account_id) = get_alice_and_bob();
 
-            assert!(matches!(get_result.return_value(), _bob_account_id));
+            assert!(matches!(owner_result.return_value(), _bob_account_id));
 
             // When
             let start_lottery = build_message::<LotteryRef>(contract_account_id.clone())
