@@ -238,7 +238,7 @@ mod lottery {
 
         /// We test that we can upload and instantiate the contract using its default constructor.
         #[ink_e2e::test]
-        async fn default_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
+        async fn init_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
             // Given
             let constructor = LotteryRef::new();
 
@@ -262,7 +262,7 @@ mod lottery {
 
         /// We test that we can run lottery.
         #[ink_e2e::test]
-        async fn it_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
+        async fn lottery_flow(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
             // Given
             let constructor = LotteryRef::new();
             let contract_account_id = client
@@ -298,7 +298,7 @@ mod lottery {
             let _stop_lottery_result = client
                 .call(&ink_e2e::bob(), stop_lottery, 0, None)
                 .await
-                .expect("start_lottery failed");
+                .expect("stop_lottery failed");
 
             // Then
             let running_after_stop = build_message::<LotteryRef>(contract_account_id.clone())
@@ -315,22 +315,27 @@ mod lottery {
                 .await
                 .expect("start_lottery failed");
 
-            // When
+            // Enter
             let enter = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.enter());
             let _enter_result = client
                 .call(&ink_e2e::alice(), enter, 1000, None)
                 .await
-                .expect("start_lottery failed");
+                .expect("enter lottery failed");
 
             // Then
             let pot = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.pot());
             let pot_result = client.call_dry_run(&ink_e2e::alice(), &pot, 0, None).await;
-            // assert!(matches!(pot_result.return_value(), 1000));
+            assert!(&pot_result.return_value() > &1u128);
 
-            // Print pot_result
-            println!("pot_result: {:?}", pot_result);
+
+            let enter_again = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.enter());
+            client
+                .call(&ink_e2e::bob(), enter_again, 1000, None)
+                .await
+                .expect("enter lottery failed");
 
             Ok(())
         }
