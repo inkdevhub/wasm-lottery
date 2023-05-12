@@ -220,6 +220,18 @@ mod lottery {
         /// The End-to-End test `Result` type.
         type E2EResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
+        fn get_alice_and_bob() -> (AccountId, AccountId) {
+            let alice = ink_e2e::alice::<ink_e2e::PolkadotConfig>();
+            let alice_account_id_32 = alice.account_id();
+            let alice_account_id = AccountId::try_from(alice_account_id_32.as_ref()).unwrap();
+
+            let bob = ink_e2e::bob::<ink_e2e::PolkadotConfig>();
+            let bob_account_id_32 = bob.account_id();
+            let bob_account_id = AccountId::try_from(bob_account_id_32.as_ref()).unwrap();
+
+            (alice_account_id, bob_account_id)
+        }
+
         /// We test that we can upload and instantiate the contract using its default constructor.
         #[ink_e2e::test]
         async fn default_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
@@ -237,7 +249,9 @@ mod lottery {
             let owner = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.owner());
             let owner_result = client.call_dry_run(&ink_e2e::alice(), &owner, 0, None).await;
-            assert!(matches!(owner_result.return_value(), &ink_e2e::alice()));
+            let (_alice_account_id, _bob_account_id) = get_alice_and_bob();
+
+            assert!(matches!(owner_result.return_value(), _alice_account_id));
 
             Ok(())
         }
@@ -256,7 +270,9 @@ mod lottery {
             let owner = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.owner());
             let owner_result = client.call_dry_run(&ink_e2e::bob(), &owner, 0, None).await;
-            assert!(matches!(get_result.return_value(), &ink_e2e::bob()));
+            let (_alice_account_id, _bob_account_id) = get_alice_and_bob();
+
+            assert!(matches!(get_result.return_value(), _bob_account_id));
 
             // When
             let start_lottery = build_message::<LotteryRef>(contract_account_id.clone())
