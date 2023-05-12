@@ -236,7 +236,7 @@ mod lottery {
         #[ink_e2e::test]
         async fn default_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
             // Given
-            let constructor = LotteryRef::default();
+            let constructor = LotteryRef::new();
 
             // When
             let contract_account_id = client
