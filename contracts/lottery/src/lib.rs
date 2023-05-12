@@ -315,7 +315,7 @@ mod lottery {
                 .await
                 .expect("start_lottery failed");
 
-            // Enter
+            // Enter Lottery
             let enter = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.enter());
             let _enter_result = client
