@@ -1,16 +1,5 @@
 name: E2E tests
-
-on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'README.md'
-      - '.gitlab-ci.yml'
-  pull_request:
-    branches:
-      - main
-
+'on': pull_request
 jobs:
   check:
     name: e2e_tests
