@@ -3,7 +3,7 @@ name: E2E tests
 jobs:
   check:
     name: e2e_tests
-    runs-on: ubuntu_20_64_core
+    runs-on: ubuntu-latest
     env:
       UPGRADEABLE_CONTRACTS:    "forward-calls set-code-hash"
       DELEGATOR_SUBCONTRACTS:   "accumulator adder subber"
