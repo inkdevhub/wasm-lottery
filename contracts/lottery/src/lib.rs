@@ -323,19 +323,24 @@ mod lottery {
                 .await
                 .expect("enter lottery failed");
 
-            // Then
+            // Check pot
             let pot = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.pot());
             let pot_result = client.call_dry_run(&ink_e2e::alice(), &pot, 0, None).await;
             assert!(&pot_result.return_value() > &1u128);
 
-
+            // Second enter
             let enter_again = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.enter());
             client
                 .call(&ink_e2e::bob(), enter_again, 1000, None)
                 .await
                 .expect("enter lottery failed");
+
+            let pot2 = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.pot());
+            let pot_result2 = client.call_dry_run(&ink_e2e::alice(), &pot2, 0, None).await;
+            assert!(&pot_result2.return_value() > &1u128);
 
             Ok(())
         }
