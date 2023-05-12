@@ -1,20 +1,9 @@
 name: E2E tests
-
-on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'README.md'
-      - '.gitlab-ci.yml'
-  pull_request:
-    branches:
-      - main
-
+'on': pull_request
 jobs:
   check:
     name: e2e_tests
-    runs-on: ubuntu_20_64_core
+    runs-on: ubuntu-latest
     env:
       UPGRADEABLE_CONTRACTS:    "forward-calls set-code-hash"
       DELEGATOR_SUBCONTRACTS:   "accumulator adder subber"
@@ -35,6 +24,10 @@ jobs:
           toolchain: stable
           components: rust-src
           override: true
+
+      - run: |
+        rustup install 1.68
+        rustup default stable
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.2.0
