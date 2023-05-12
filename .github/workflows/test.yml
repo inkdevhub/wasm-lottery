@@ -25,9 +25,10 @@ jobs:
           components: rust-src
           override: true
 
-      - run: |
-        rustup install 1.68
-        rustup default stable
+      - name: install 1.68
+        run: |
+          rustup install 1.68
+          rustup default stable
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.2.0
