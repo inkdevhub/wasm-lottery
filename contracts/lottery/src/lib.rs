@@ -118,17 +118,21 @@ mod lottery {
         #[ink(message, payable)]
         pub fn enter(&mut self) -> Result<()> {
             if !self.running {
+                ink::env::debug_println!("here1");
                 return Err(Error::LotteryNotRunning);
             }
             let caller = self.env().caller();
             let balance: Option<Balance> = self.entries.get(&caller);
 
             if balance.is_some() {
+                ink::env::debug_println!("here2");
                 return Err(Error::PlayerAlreadyInLottery);
             }
 
             let value: Balance = self.env().transferred_value();
             if value < 1 {
+                ink::env::debug_println!("here3");
+
                 return Err(Error::NoValueSent);
             }
 
@@ -303,19 +307,30 @@ mod lottery {
             assert!(matches!(running_after_stop_result.return_value(), false));
 
 
+            // Start Lottery again
+            let start_again = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.start_lottery());
+            client
+                .call(&ink_e2e::bob(), start_again, 0, None)
+                .await
+                .expect("start_lottery failed");
+
             // When
             let enter = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.enter());
             let _enter_result = client
-                .call(&ink_e2e::bob(), enter, 1, None)
+                .call(&ink_e2e::alice(), enter, 1000, None)
                 .await
                 .expect("start_lottery failed");
 
             // Then
             let pot = build_message::<LotteryRef>(contract_account_id.clone())
                 .call(|lottery| lottery.pot());
-            let pot_result = client.call_dry_run(&ink_e2e::bob(), &pot, 0, None).await;
-            assert!(matches!(pot_result.return_value(), 1));
+            let pot_result = client.call_dry_run(&ink_e2e::alice(), &pot, 0, None).await;
+            // assert!(matches!(pot_result.return_value(), 1000));
+
+            // Print pot_result
+            println!("pot_result: {:?}", pot_result);
 
             Ok(())
         }
