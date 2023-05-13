@@ -118,21 +118,17 @@ mod lottery {
         #[ink(message, payable)]
         pub fn enter(&mut self) -> Result<()> {
             if !self.running {
-                ink::env::debug_println!("here1");
                 return Err(Error::LotteryNotRunning);
             }
             let caller = self.env().caller();
             let balance: Option<Balance> = self.entries.get(&caller);
 
             if balance.is_some() {
-                ink::env::debug_println!("here2");
                 return Err(Error::PlayerAlreadyInLottery);
             }
 
             let value: Balance = self.env().transferred_value();
             if value < 1 {
-                ink::env::debug_println!("here3");
-
                 return Err(Error::NoValueSent);
             }
 
@@ -209,10 +205,6 @@ mod lottery {
     }
 
     /// end-to-end (E2E) or integration tests for lottery.
-    ///
-    /// When running these you need to make sure that you:
-    /// - Compile the tests with the `e2e-tests` feature flag enabled (`--features e2e-tests`)
-    /// - Are running a Substrate node which contains `pallet-contracts` in the background
     #[cfg(all(test, feature = "e2e-tests"))]
     mod e2e_tests {
         /// Imports all the definitions from the outer scope so we can use them here.
