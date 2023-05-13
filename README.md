@@ -60,3 +60,11 @@ Goto http://localhost:3000
 
 ##### links
 link to firebase deployed website: https://wasm-lottery.web.app/
+
+
+##### E2E tests
+
+```
+cd contracts/lottery
+cargo test --features e2e-tests
+```

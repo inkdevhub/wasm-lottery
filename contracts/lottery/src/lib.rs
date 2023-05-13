@@ -203,4 +203,138 @@ mod lottery {
             assert_eq!(lottery.random() > 0, true);
         }
     }
+
+    /// end-to-end (E2E) or integration tests for lottery.
+    #[cfg(all(test, feature = "e2e-tests"))]
+    mod e2e_tests {
+        /// Imports all the definitions from the outer scope so we can use them here.
+        use super::*;
+
+        /// A helper function used for calling contract messages.
+        use ink_e2e::build_message;
+
+        /// The End-to-End test `Result` type.
+        type E2EResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+        fn get_alice_and_bob() -> (AccountId, AccountId) {
+            let alice = ink_e2e::alice::<ink_e2e::PolkadotConfig>();
+            let alice_account_id_32 = alice.account_id();
+            let alice_account_id = AccountId::try_from(alice_account_id_32.as_ref()).unwrap();
+
+            let bob = ink_e2e::bob::<ink_e2e::PolkadotConfig>();
+            let bob_account_id_32 = bob.account_id();
+            let bob_account_id = AccountId::try_from(bob_account_id_32.as_ref()).unwrap();
+
+            (alice_account_id, bob_account_id)
+        }
+
+        /// We test that we can upload and instantiate the contract using its default constructor.
+        #[ink_e2e::test]
+        async fn init_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
+            // Given
+            let constructor = LotteryRef::new();
+
+            // When
+            let contract_account_id = client
+                .instantiate("lottery", &ink_e2e::alice(), constructor, 0, None)
+                .await
+                .expect("instantiate failed")
+                .account_id;
+
+            // Then
+            let owner = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.owner());
+            let owner_result = client.call_dry_run(&ink_e2e::alice(), &owner, 0, None).await;
+            let (_alice_account_id, _bob_account_id) = get_alice_and_bob();
+
+            assert!(matches!(owner_result.return_value(), _alice_account_id));
+
+            Ok(())
+        }
+
+        /// We test that we can run lottery.
+        #[ink_e2e::test]
+        async fn lottery_flow(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
+            // Given
+            let constructor = LotteryRef::new();
+            let contract_account_id = client
+                .instantiate("lottery", &ink_e2e::bob(), constructor, 0, None)
+                .await
+                .expect("instantiate failed")
+                .account_id;
+
+            let owner = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.owner());
+            let owner_result = client.call_dry_run(&ink_e2e::bob(), &owner, 0, None).await;
+            let (_alice_account_id, _bob_account_id) = get_alice_and_bob();
+
+            assert!(matches!(owner_result.return_value(), _bob_account_id));
+
+            // When
+            let start_lottery = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.start_lottery());
+            let _start_lottery_result = client
+                .call(&ink_e2e::bob(), start_lottery, 0, None)
+                .await
+                .expect("start_lottery failed");
+
+            // Then
+            let running = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.is_running());
+            let running_result = client.call_dry_run(&ink_e2e::bob(), &running, 0, None).await;
+            assert!(matches!(running_result.return_value(), true));
+
+            // When
+            let stop_lottery = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.stop_lottery());
+            let _stop_lottery_result = client
+                .call(&ink_e2e::bob(), stop_lottery, 0, None)
+                .await
+                .expect("stop_lottery failed");
+
+            // Then
+            let running_after_stop = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.is_running());
+            let running_after_stop_result = client.call_dry_run(&ink_e2e::bob(), &running_after_stop, 0, None).await;
+            assert!(matches!(running_after_stop_result.return_value(), false));
+
+
+            // Start Lottery again
+            let start_again = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.start_lottery());
+            client
+                .call(&ink_e2e::bob(), start_again, 0, None)
+                .await
+                .expect("start_lottery failed");
+
+            // Enter
+            let enter = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.enter());
+            let _enter_result = client
+                .call(&ink_e2e::alice(), enter, 1000, None)
+                .await
+                .expect("enter lottery failed");
+
+            // Check pot
+            let pot = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.pot());
+            let pot_result = client.call_dry_run(&ink_e2e::alice(), &pot, 0, None).await;
+            assert!(&pot_result.return_value() > &1u128);
+
+            // Second enter
+            let enter_again = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.enter());
+            client
+                .call(&ink_e2e::bob(), enter_again, 1000, None)
+                .await
+                .expect("enter lottery failed");
+
+            let pot2 = build_message::<LotteryRef>(contract_account_id.clone())
+                .call(|lottery| lottery.pot());
+            let pot_result2 = client.call_dry_run(&ink_e2e::alice(), &pot2, 0, None).await;
+            assert!(&pot_result2.return_value() > &1u128);
+
+            Ok(())
+        }
+    }
 }

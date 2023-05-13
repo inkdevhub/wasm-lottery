@@ -4,8 +4,11 @@ version = "0.1.0"
 authors = ["Nikhil Ranjan"]
 edition = "2021"
 
+[dev-dependencies]
+ink_e2e = "4.2.0"
+
 [dependencies]
-ink = { version = "~4.1.0", default-features = false }
+ink = { version = "~4.2.0", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2", default-features = false, features = ["derive"], optional = true }
@@ -21,3 +24,4 @@ std = [
     "scale-info/std",
 ]
 ink-as-dependency = []
+e2e-tests = []
